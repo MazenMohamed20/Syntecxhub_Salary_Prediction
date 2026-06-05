@@ -167,7 +167,7 @@ Predicted Salary: $65,634
 
 **Mazen Mohamed**  
 Machine Learning Trainee — SyntecxHub  
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/YOUR_USERNAME)
+[![https://github.com/MazenMohamed20](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/YOUR_USERNAME)
 
 ---
 
