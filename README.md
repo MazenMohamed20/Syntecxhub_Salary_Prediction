@@ -1,50 +1,156 @@
-# 💰 Salary Prediction — Machine Learning Project
+# 💰 Salary Prediction
 
-A machine learning project that predicts employee salaries based on experience, education, gender, and job title using Linear Regression.
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)
+![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange?style=for-the-badge&logo=scikit-learn)
+![Status](https://img.shields.io/badge/Status-Complete-success?style=for-the-badge)
+![R2 Score](https://img.shields.io/badge/R²%20Score-0.8991-brightgreen?style=for-the-badge)
 
----
-
-## 📊 Dataset Overview
-
-| Property | Value |
-|----------|-------|
-| Source | Kaggle — Salary Prediction Dataset |
-| Raw Rows | 375 |
-| After Cleaning | 373 |
-| Features | 6 (Age, Gender, Education Level, Job Title, Years of Experience, Salary) |
-| Target | Salary (USD) |
+> Predicting employee salaries using **Linear Regression** based on experience, education, gender, and job title.  
+> Built as part of the **SyntecxHub Machine Learning Track — Week 1 Project**.
 
 ---
 
-## ⚙️ Project Pipeline
+## 📌 Project Overview
+
+This project builds a machine learning model that predicts the annual salary of employees based on key features like years of experience, education level, and job title.
+
+| Metric | Value |
+|--------|-------|
+| **Model** | Linear Regression |
+| **R² Score** | 0.8991 |
+| **RMSE** | $15,551 |
+| **Dataset** | Kaggle — Salary Prediction Dataset |
+| **Training Samples** | 298 |
+| **Test Samples** | 75 |
+
+---
+
+## 📂 Project Structure
 
 ```
-Raw Data → Clean Data → Encode Features → Train/Test Split → Train Models → Evaluate → Save Best Model
+Salary-Prediction/
+│
+├── main.py                          # Main training pipeline
+├── predict.py                       # Load model & make predictions
+├── Salary_Prediction_model.pkl      # Saved trained model
+├── train.csv                        # Raw dataset
+├── data_clear.csv                   # Cleaned dataset
+└── README.md                        # You are here
 ```
-
-### Steps:
-1. **Load & Inspect** — Load CSV, check shape and data types
-2. **Handle Missing Values** — Dropped 2 rows with null values (375 → 373)
-3. **Encode Categorical Features:**
-   - `Gender` → LabelEncoder (Male/Female)
-   - `Education Level` → Ordinal Encoding (Bachelor's=0, Master's=1, PhD=2)
-   - `Job Title` → One-Hot Encoding (→ 174 columns)
-4. **Train/Test Split** — 80% Train (298) / 20% Test (75), random_state=42
-5. **Train 2 Models** — Single Feature vs Multiple Features
-6. **Evaluate** — RMSE & R² Score
-7. **Save Best Model** — `.pkl` file using joblib
 
 ---
 
-## 📈 Model Results
+## 🔄 Pipeline
 
-| Model | Features Used | RMSE | R² Score |
-|-------|--------------|------|----------|
-| Single Feature | Years of Experience only | $15,551 | 0.8991 |
-| Multiple Features | All features | $18,858 | 0.8517 |
+```
+Load Data → Clean & Handle Missing Values → Encode Categorical Features
+    → Train/Test Split → Train Models → Compare → Save Best Model → Predict
+```
 
-### 🏆 Best Model: **Single Feature (Years of Experience)**
-> R² = **0.8991** — The model explains ~90% of salary variance using experience alone.
+### Step-by-step:
+
+**1. Load & Explore**
+```python
+data = pd.read_csv('train.csv')
+print(data.shape)         # (375, 6)
+print(data.isnull().sum())
+```
+
+**2. Handle Missing Values**
+```python
+if data.isnull().sum().any():
+    data_clear = data.dropna()   # 375 → 373 rows
+```
+
+**3. Encode Categorical Features**
+```python
+# Gender → LabelEncoder
+data_clear['Gender'] = le.fit_transform(data_clear['Gender'])
+
+# Education Level → Ordinal Encoding (order matters)
+edu_order = {"Bachelor's": 0, "Master's": 1, "PhD": 2}
+data_clear['Education Level'] = data_clear['Education Level'].map(edu_order)
+
+# Job Title → One-Hot Encoding
+data_clear = pd.get_dummies(data_clear, columns=['Job Title'], drop_first=True)
+```
+
+**4. Train/Test Split**
+```python
+x_train, x_test, y_train, y_test = model_selection.train_test_split(
+    x, y, test_size=0.2, random_state=42)
+# Train: 298 | Test: 75
+```
+
+**5. Train & Compare 2 Models**
+```python
+# Model 1: Single Feature
+model_single.fit(x_train[['Years of Experience']], y_train)
+
+# Model 2: Multiple Features
+model_multi.fit(x_train, y_train)
+```
+
+---
+
+## 📊 Results
+
+```
+Single Feature (Years of Experience):
+  RMSE : 15,551
+  R²   : 0.8991
+
+Multiple Features (All):
+  RMSE : 18,858
+  R²   : 0.8517
+```
+
+The **Single Feature model** outperformed the Multiple Features model, explaining **~90% of salary variance** using Years of Experience alone. The Multi-Feature model suffered due to high dimensionality from One-Hot Encoding Job Title (174 columns).
+
+---
+
+## 🚀 How to Run
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/YOUR_USERNAME/Salary-Prediction.git
+cd Salary-Prediction
+```
+
+### 2. Install dependencies
+```bash
+pip install pandas numpy scikit-learn joblib
+```
+
+### 3. Train the model
+```bash
+python main.py
+```
+
+### 4. Make predictions
+```bash
+python predict.py
+```
+
+---
+
+## 🧰 Tech Stack
+
+- **Python 3.11**
+- **Pandas** — Data loading & manipulation
+- **NumPy** — Numerical operations
+- **Scikit-Learn** — ML model & evaluation
+- **Joblib** — Model serialization
+
+---
+
+## 📈 Key Insights
+
+- `Years of Experience` is the strongest single predictor of salary
+- **LabelEncoder** used for Gender & Ordinal Encoding for Education Level (order matters)
+- One-Hot Encoding `Job Title` generated **174 columns**, causing slight overfitting in the multi-feature model
+- Single Feature model achieved R² of **0.8991** — cleaner and more generalizable
+- Only **2 rows** were dropped due to missing values (375 → 373)
 
 ---
 
@@ -57,46 +163,14 @@ Predicted Salary: $65,634
 
 ---
 
-## 🛠️ Tech Stack
-
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.x-orange)
-![Pandas](https://img.shields.io/badge/Pandas-2.x-green)
-![NumPy](https://img.shields.io/badge/NumPy-1.x-lightblue)
-
----
-
-## 📁 Project Structure
-
-```
-Salary-Prediction/
-│
-├── train.csv                        # Raw dataset
-├── data_clear.csv                   # Cleaned dataset
-├── main.py                          # Training pipeline
-├── predict.py                       # Load model & predict
-├── Salary_Prediction_model.pkl      # Saved best model
-└── README.md
-```
-
----
-
-## 🚀 How to Run
-
-```bash
-# 1. Install dependencies
-pip install pandas numpy scikit-learn joblib
-
-# 2. Train the model
-python main.py
-
-# 3. Run predictions
-python predict.py
-```
-
----
-
 ## 👤 Author
 
-**Mazen Mohamed** — Trainee @ SYNTECXHUB  
-*Building ML projects from scratch, step by step.*
+**Mazen Mohamed**  
+Machine Learning Trainee — SyntecxHub  
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/YOUR_USERNAME)
+
+---
+
+## 📜 License
+
+This project is open source and available under the [MIT License](LICENSE).
