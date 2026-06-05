@@ -98,5 +98,5 @@ python predict.py
 
 ## 👤 Author
 
-**Mezo** — Trainee @ SYNTECXHUB  
+**Mazen Mohamed** — Trainee @ SYNTECXHUB  
 *Building ML projects from scratch, step by step.*
